@@ -14,6 +14,9 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
@@ -33,6 +36,9 @@ int main(void)
 
     /* Data declaration */
     // create buffer and select it
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
     GLuint buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -50,13 +56,12 @@ int main(void)
     GLsizei stride = components * sizeof(float);
     glVertexAttribPointer(0, components, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(0);
-    const GLvoid *pointer = (GLvoid*)1;
 
     // create shaders
     const char *vertexShader = R"(
-        #version 130
+        #version 420 core
 
-        in vec4 position;
+        layout(location = 0) in vec4 position;
 
         void main()
         {
@@ -64,7 +69,7 @@ int main(void)
         }
         )";
     const char *fragmentShader = R"(
-        #version 130
+        #version 420 core
 
         out vec4 color;
 
@@ -83,10 +88,9 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         /* Poll for and process events */
         glfwPollEvents();
