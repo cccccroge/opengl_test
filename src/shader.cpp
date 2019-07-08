@@ -1,10 +1,22 @@
 #include "shader.h"
 
-GLuint CreateShaderProgram(const char **vertexShader, const char **fragmentShader)
+GLuint CreateShaderProgram(const char *vsPath, const char *fsPath)
 {
+    // file to char[]
+    std::ifstream in(vsPath);
+    std::string contents((std::istreambuf_iterator<char>(in)), 
+        std::istreambuf_iterator<char>());
+    const char *vertexShader = contents.c_str();
+
+    std::ifstream in2(fsPath);
+    std::string contents2((std::istreambuf_iterator<char>(in2)), 
+        std::istreambuf_iterator<char>());
+    const char *fragmentShader = contents2.c_str();
+
+    // create program and attach shaders
     GLuint program = glCreateProgram();
-    GLuint vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+    GLuint vs = CompileShader(GL_VERTEX_SHADER, &vertexShader);
+    GLuint fs = CompileShader(GL_FRAGMENT_SHADER, &fragmentShader);
 
     if (vs == 0 || fs == 0) {
         glDeleteProgram(program);
@@ -16,6 +28,7 @@ GLuint CreateShaderProgram(const char **vertexShader, const char **fragmentShade
     glLinkProgram(program);
     glValidateProgram(program);
     
+    // clear up
     glDetachShader(program, vs);
     glDetachShader(program, fs);
     glDeleteShader(vs);

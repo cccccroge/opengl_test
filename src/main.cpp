@@ -57,29 +57,10 @@ int main(void)
     glVertexAttribPointer(0, components, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(0);
 
-    // create shaders
-    const char *vertexShader = R"(
-        #version 420 core
-
-        layout(location = 0) in vec4 position;
-
-        void main()
-        {
-            gl_Position = position;
-        }
-        )";
-    const char *fragmentShader = R"(
-        #version 420 core
-
-        out vec4 color;
-
-        void main()
-        {
-            color = vec4(1.0, 0.0, 0.0, 1.0);
-        }
-        )";
-
-    GLuint shaderProgram = CreateShaderProgram(&vertexShader, &fragmentShader);
+    // create shaders;
+    GLuint shaderProgram = CreateShaderProgram(
+        "rsc/vertexShader.shader", 
+        "rsc/fragmentShader.shader");
     glUseProgram(shaderProgram);
 
     /* Main loop */
