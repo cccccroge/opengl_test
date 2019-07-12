@@ -1,5 +1,6 @@
 #include "shader.h"
 
+
 GLuint CreateShaderProgram(const char *vsPath, const char *fsPath)
 {
     // file to char[]

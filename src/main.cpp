@@ -39,17 +39,27 @@ int main(void)
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    GLuint ibo;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-    // specify points of the triangle and put it to buffer
-    GLfloat points[6] = {
-        -0.5, -0.5,
+    // points of the triangles forming a rectangle, and
+    // indexes of them to form two triangles
+    GLfloat points[8] = {
          0.5, -0.5,
-         0.0,  0.5
+         0.5,  0.5,
+        -0.5,  0.5,
+        -0.5, -0.5
     };
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), points, GL_STATIC_DRAW);
+    GLuint indexes[6] = {
+        0, 1, 3,
+        3, 2, 1
+    };
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), points, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), indexes, GL_STATIC_DRAW);
 
     // specify the vertex attributes layout
     GLint components = 2;
@@ -68,7 +78,8 @@ int main(void)
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
