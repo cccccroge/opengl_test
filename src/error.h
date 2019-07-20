@@ -1,6 +1,6 @@
 #include <GLEW/glew.h>
 #include <iostream>
-#include <initializer_list>
+
 
 #define ASSERT(func) clearError();\
     func;\
