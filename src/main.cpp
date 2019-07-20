@@ -27,6 +27,7 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    // glfwSwapInterval(1);
 
     /* Use GLEW to get GL extensions */
     if (glewInit() != GLEW_OK)
@@ -70,16 +71,28 @@ int main(void)
 
     // create shaders;
     GLuint shaderProgram = CreateShaderProgram(
-        "rsc/vertexShader.shader", 
-        "rsc/fragmentShader.shader");
+        "rsc/vertexShader.glsl", 
+        "rsc/fragmentShader.glsl");
     glUseProgram(shaderProgram);
+
+    // Get uniforms
+    GLint loc = glGetUniformLocation(shaderProgram, "u_color");
+    GLfloat r = 0.5;
+    GLfloat increment = 0.01;
 
     /* Main loop */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-        ASSERT(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
+        glUniform4f(loc, r, 0.5, 0.5, 1);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        /* Changing uniform's value */
+        if (r >= 1.0 || r <= 0.0) {
+            increment = -increment;
+        }
+        r += increment;
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
