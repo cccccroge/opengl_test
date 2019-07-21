@@ -8,7 +8,7 @@ void clearError()
     }
 }
 
-void checkError(std::string functionName, std::string fileName, int line)
+bool checkError(std::string functionName, std::string fileName, int line)
 {
     GLenum e = glGetError();
     if (e != GL_NO_ERROR)
@@ -18,6 +18,8 @@ void checkError(std::string functionName, std::string fileName, int line)
                   << "[line] " << line << std::endl
                   << "[function] " << functionName << std::endl
                   << "[error code] 0x" << std::hex << e << std::endl;
-        __builtin_trap();
+        return false;
     }
+
+    return true;
 }

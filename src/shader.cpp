@@ -20,20 +20,20 @@ GLuint CreateShaderProgram(const char *vsPath, const char *fsPath)
     GLuint fs = CompileShader(GL_FRAGMENT_SHADER, &fragmentShader);
 
     if (vs == 0 || fs == 0) {
-        glDeleteProgram(program);
+        GLCALL(glDeleteProgram(program));
         return 0;
     }
 
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
+    GLCALL(glAttachShader(program, vs));
+    GLCALL(glAttachShader(program, fs));
+    GLCALL(glLinkProgram(program));
+    GLCALL(glValidateProgram(program));
     
     // clear up
-    glDetachShader(program, vs);
-    glDetachShader(program, fs);
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+    GLCALL(glDetachShader(program, vs));
+    GLCALL(glDetachShader(program, fs));
+    GLCALL(glDeleteShader(vs));
+    GLCALL(glDeleteShader(fs));
     
     return program;
 }
@@ -41,25 +41,25 @@ GLuint CreateShaderProgram(const char *vsPath, const char *fsPath)
 GLuint CompileShader(GLuint type, const char **src)
 {
     GLuint id = glCreateShader(type);
-    glShaderSource(id, 1, src, nullptr);
-    glCompileShader(id);
+    GLCALL(glShaderSource(id, 1, src, nullptr));
+    GLCALL(glCompileShader(id));
 
     // error handling
     GLint success;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+    GLCALL(glGetShaderiv(id, GL_COMPILE_STATUS, &success));
 
     if (success) {
         return id;
     }
     else {
         GLint length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+        GLCALL(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         GLchar info[length];
-        glGetShaderInfoLog(id, length, nullptr, info);
+        GLCALL(glGetShaderInfoLog(id, length, nullptr, info));
 
         std::cout << "Failed to compile shader:" << std::endl;
         std::cout << info << std::endl;
-        glDeleteShader(id);
+        GLCALL(glDeleteShader(id));
 
         return 0;
     }
