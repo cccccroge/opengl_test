@@ -83,6 +83,17 @@ int main(void)
     /* Main loop */
     while (!glfwWindowShouldClose(window))
     {
+        // Unbind and re-bind to do test
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glDisableVertexAttribArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glUseProgram(0);
+        
+        glBindVertexArray(vao);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glUseProgram(shaderProgram);
+
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
         glUniform4f(loc, r, 0.5, 0.5, 1);
