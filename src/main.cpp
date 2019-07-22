@@ -4,6 +4,8 @@
 #include <string>
 #include "shader.h"
 #include "error.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 
 int main(void)
@@ -37,19 +39,11 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     /* Data declaration */
-    // create buffer and select it
+    // create buffers and data
     GLuint vao;
     GLCALL(glGenVertexArrays(1, &vao));
-    GLCALL(glBindVertexArray(vao));
-    GLuint vbo;
-    GLCALL(glGenBuffers(1, &vbo));
-    GLCALL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
-    GLuint ibo;
-    GLCALL(glGenBuffers(1, &ibo));
-    GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-
-    // points of the triangles forming a rectangle, and
-    // indexes of them to form two triangles
+    GLCALL(glBindVertexArray(vao));    
+    
     GLfloat points[8] = {
          0.5, -0.5,
          0.5,  0.5,
@@ -60,8 +54,9 @@ int main(void)
         0, 1, 3,
         3, 2, 1
     };
-    GLCALL(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), points, GL_STATIC_DRAW));
-    GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), indexes, GL_STATIC_DRAW));
+
+    VertexBuffer *vb = new VertexBuffer(points, 8 * sizeof(GLfloat));
+    IndexBuffer *ib = new IndexBuffer(indexes, 6);
 
     // specify the vertex attributes layout
     GLint components = 2;
@@ -86,12 +81,12 @@ int main(void)
         // Unbind and re-bind to do test
         GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
         GLCALL(glDisableVertexAttribArray(0));
-        GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+        ib->unbind();
         GLCALL(glUseProgram(0));
         
         GLCALL(glBindVertexArray(vao));
         GLCALL(glEnableVertexAttribArray(0));
-        GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+        ib->bind();
         GLCALL(glUseProgram(shaderProgram));
 
         /* Render here */

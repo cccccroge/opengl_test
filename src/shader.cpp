@@ -1,5 +1,8 @@
 #include "shader.h"
-
+#include <string>
+#include <iostream>
+#include <fstream>
+#include "error.h"
 
 GLuint CreateShaderProgram(const char *vsPath, const char *fsPath)
 {

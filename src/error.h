@@ -1,5 +1,6 @@
 #include <GLEW/glew.h>
-#include <iostream>
+#include <string>
+
 
 #define ASSERT(x) \
     if (!x)       \
