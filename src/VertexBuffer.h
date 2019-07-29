@@ -1,8 +1,10 @@
+#pragma once
 #include <GLEW/glew.h>
 
 class VertexBuffer
 {
 public:
+    VertexBuffer();
     VertexBuffer(const GLfloat *data, const GLuint size);
     ~VertexBuffer();
 

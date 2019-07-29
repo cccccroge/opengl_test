@@ -6,11 +6,11 @@
 #include "error.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-
+#include "VertexArray.h"
 
 int main(void)
 {
-    GLFWwindow* window;
+    GLFWwindow *window;
 
     /* Initialize the glfw library */
     if (!glfwInit())
@@ -39,38 +39,38 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     /* Data declaration */
-    // create buffers and data
-    GLuint vao;
-    GLCALL(glGenVertexArrays(1, &vao));
-    GLCALL(glBindVertexArray(vao));    
-    
+    // Create vertex array
+    VertexArray *va = new VertexArray();
+    va->bind();
+
+    // Create vertex buffer and its layout working along with the vertex array
     GLfloat points[8] = {
          0.5, -0.5,
          0.5,  0.5,
         -0.5,  0.5,
-        -0.5, -0.5
-    };
+        -0.5, -0.5};
+    VertexBuffer *vb = new VertexBuffer(points, 8 * sizeof(GLfloat));
+    va->addVertexBuffer(*vb, 0);
+
+    VertexBufferLayout *vbl = new VertexBufferLayout();
+    vbl->pushElement(VertexBufferElement(2, GL_FLOAT));
+    va->addVertexBufferLayout(*vbl, 0);
+
+    va->select(0);
+
+    // Create index buffer
     GLuint indexes[6] = {
         0, 1, 3,
-        3, 2, 1
-    };
-
-    VertexBuffer *vb = new VertexBuffer(points, 8 * sizeof(GLfloat));
+        3, 2, 1};
     IndexBuffer *ib = new IndexBuffer(indexes, 6);
+    ib->bind();
 
-    // specify the vertex attributes layout
-    GLint components = 2;
-    GLsizei stride = components * sizeof(float);
-    GLCALL(glVertexAttribPointer(0, components, GL_FLOAT, GL_FALSE, stride, 0));
-    GLCALL(glEnableVertexAttribArray(0));
-
-    // create shaders;
+    // Create shaders;
     GLuint shaderProgram = CreateShaderProgram(
-        "rsc/vertexShader.glsl", 
+        "rsc/vertexShader.glsl",
         "rsc/fragmentShader.glsl");
     GLCALL(glUseProgram(shaderProgram));
 
-    // Get uniforms
     GLint loc = glGetUniformLocation(shaderProgram, "u_color");
     GLfloat r = 0.5;
     GLfloat increment = 0.01;
@@ -79,15 +79,13 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         // Unbind and re-bind to do test
-        GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
-        GLCALL(glDisableVertexAttribArray(0));
+/*         va->unbind();
         ib->unbind();
         GLCALL(glUseProgram(0));
-        
-        GLCALL(glBindVertexArray(vao));
-        GLCALL(glEnableVertexAttribArray(0));
+
+        va->bind();
         ib->bind();
-        GLCALL(glUseProgram(shaderProgram));
+        GLCALL(glUseProgram(shaderProgram)); */
 
         /* Render here */
         GLCALL(glClear(GL_COLOR_BUFFER_BIT));
@@ -95,7 +93,8 @@ int main(void)
         GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         /* Changing uniform's value */
-        if (r >= 1.0 || r <= 0.0) {
+        if (r >= 1.0 || r <= 0.0)
+        {
             increment = -increment;
         }
         r += increment;
@@ -108,6 +107,10 @@ int main(void)
     }
 
     // clean up objects
+    delete va;
+    delete vb;
+    delete vbl;
+    delete ib;
     GLCALL(glDeleteProgram(shaderProgram));
 
     glfwTerminate();

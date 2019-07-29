@@ -2,6 +2,11 @@
 #include "error.h"
 
 
+VertexBuffer::VertexBuffer() : rendererID()
+{
+
+}
+
 VertexBuffer::VertexBuffer(const GLfloat *data, const GLuint size)
 {
     GLCALL(glGenBuffers(1, &rendererID));
