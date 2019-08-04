@@ -29,8 +29,10 @@ public:
     VertexBufferLayout();
     ~VertexBufferLayout();
 
-    void pushElement(const VertexBufferElement vbe);
-    void setup();
+    void pushElement(const VertexBufferElement &vbe);
+    void setup() const;
+
+    inline GLuint getStride() const { return stride; }
 
 private:
     // each element is 

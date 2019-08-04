@@ -1,6 +1,10 @@
 #include "IndexBuffer.h"
 #include "error.h"
 
+IndexBuffer::IndexBuffer()
+{
+    GLCALL(glGenBuffers(1, &rendererID));
+}
 
 IndexBuffer::IndexBuffer(const GLuint *data, const GLuint count):
     count(count)

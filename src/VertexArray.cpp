@@ -13,81 +13,76 @@ VertexArray::~VertexArray()
     GLCALL(glDeleteVertexArrays(1, &rendererID));
 }
 
-void VertexArray::bind()
+void VertexArray::bind() const
 {
     GLCALL(glBindVertexArray(rendererID));
 }
 
-void VertexArray::unbind()
+void VertexArray::unbind() const
 {
     GLCALL(glBindVertexArray(0));
 }
 
-void VertexArray::addVertexBuffer(const VertexBuffer &buffer, int index)
-{
-    std::tuple<VertexBuffer&, VertexBufferLayout&> tup = 
-        std::forward_as_tuple(VertexBuffer(), VertexBufferLayout());
-
+void VertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer> buffer, const int index)
+{    
     try
     {
-        tup = buffers.at(index);
+        buffers.at(index);
     }
     catch (std::out_of_range &e)
     {
         // std::cout << e.what() << std::endl;
-
-        // Insert new tuple
-        std::get<0>(tup) = buffer;
-        buffers.insert(buffers.begin() + index, tup);
-    }
-    
-    // Override existing tuple
-    std::get<0>(tup) = buffer;
-}
-
-void VertexArray::addVertexBufferLayout(const VertexBufferLayout &layout, int index)
-{
-    std::tuple<VertexBuffer&, VertexBufferLayout&> tup = 
-        std::forward_as_tuple(VertexBuffer(), VertexBufferLayout());
-
-    try
-    {
-        tup = buffers.at(index);
-    }
-    catch (std::out_of_range &e)
-    {
-        // std::cout << e.what() << std::endl;
-
-        // Insert new tuple
-        std::get<1>(tup) = layout;
-        buffers.insert(buffers.begin() + index, tup);
+        // Insert buffer
+        buffers.insert(buffers.begin() + index, buffer);
         return;
     }
     
-    // Override existing tuple
-    std::get<1>(tup) = layout;
+    // Override existing buffer
+    buffers.at(index) = buffer;
 }
 
-bool VertexArray::select(int index)
+void VertexArray::addVertexBufferLayout(const VertexBufferLayout &layout, const int index)
 {
-    std::tuple<VertexBuffer&, VertexBufferLayout&> tup = 
-        std::forward_as_tuple(VertexBuffer(), VertexBufferLayout());
-
     try
     {
-        tup = buffers.at(index);
+        layouts.at(index);
+    }
+    catch (std::out_of_range &e)
+    {
+        // std::cout << e.what() << std::endl;
+        // Insert layout
+        layouts.insert(layouts.begin() + index, layout);
+        return;
+    }
+    
+    // Override existing layout
+    layouts.at(index) = layout;
+}
+
+bool VertexArray::select(const int index) const
+{
+    try
+    {
+        buffers.at(index);
+        layouts.at(index);
     }
     catch (std::out_of_range &e)
     {
         // No buffer here
-        std::cout << e.what() << std::endl;
         return false;
     }
 
+    // Check the buffer has both valid VertexBuffer and VertexBufferLayout
+    auto buffer = buffers.at(index);
+    auto layout = layouts.at(index);
+    if (buffer->getRendererID() == 0)
+        return false;
+    else if (layout.getStride() == 0)
+        return false;
+
     // Bind buffer and setup layout
-    VertexBuffer &buffer = std::get<0>(tup);
-    VertexBufferLayout &layout = std::get<1>(tup);
-    buffer.bind();
+    this->bind();
+    buffer->bind();
     layout.setup();
     
     return true;

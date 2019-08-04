@@ -4,6 +4,7 @@
 #include "VertexBufferLayout.h"
 #include <vector>
 #include <tuple>
+#include <memory>
 
 class VertexArray
 {
@@ -11,13 +12,14 @@ public:
     VertexArray();
     ~VertexArray();
 
-    void bind();
-    void unbind();
-    void addVertexBuffer(const VertexBuffer &buffer, int index);
-    void addVertexBufferLayout(const VertexBufferLayout &layout, int index);
-    bool select(int index);
+    void bind() const;
+    void unbind() const;
+    void addVertexBuffer(const std::shared_ptr<VertexBuffer> buffer, const int index);
+    void addVertexBufferLayout(const VertexBufferLayout &layout, const int index);
+    bool select(const int index) const;
 
 private:
     GLuint rendererID;
-    std::vector< std::tuple<VertexBuffer&, VertexBufferLayout&> > buffers;
+    std::vector<std::shared_ptr<VertexBuffer>> buffers;
+    std::vector<VertexBufferLayout> layouts;
 };

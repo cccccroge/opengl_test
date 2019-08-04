@@ -7,6 +7,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include <memory>
 
 int main(void)
 {
@@ -40,7 +41,7 @@ int main(void)
 
     /* Data declaration */
     // Create vertex array
-    VertexArray *va = new VertexArray();
+    auto va = std::make_unique<VertexArray>();
     va->bind();
 
     // Create vertex buffer and its layout working along with the vertex array
@@ -49,10 +50,11 @@ int main(void)
          0.5,  0.5,
         -0.5,  0.5,
         -0.5, -0.5};
-    VertexBuffer *vb = new VertexBuffer(points, 8 * sizeof(GLfloat));
-    va->addVertexBuffer(*vb, 0);
+    auto vb = std::make_shared<VertexBuffer>(points, 8 * sizeof(GLfloat));
+    va->addVertexBuffer(vb, 0);
+    vb->bind();
 
-    VertexBufferLayout *vbl = new VertexBufferLayout();
+    auto vbl = std::make_unique<VertexBufferLayout>();
     vbl->pushElement(VertexBufferElement(2, GL_FLOAT));
     va->addVertexBufferLayout(*vbl, 0);
 
@@ -62,7 +64,7 @@ int main(void)
     GLuint indexes[6] = {
         0, 1, 3,
         3, 2, 1};
-    IndexBuffer *ib = new IndexBuffer(indexes, 6);
+    auto ib = std::make_unique<IndexBuffer>(indexes, 6);
     ib->bind();
 
     // Create shaders;
@@ -107,10 +109,6 @@ int main(void)
     }
 
     // clean up objects
-    delete va;
-    delete vb;
-    delete vbl;
-    delete ib;
     GLCALL(glDeleteProgram(shaderProgram));
 
     glfwTerminate();

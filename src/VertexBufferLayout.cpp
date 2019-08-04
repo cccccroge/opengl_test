@@ -44,22 +44,22 @@ VertexBufferLayout::~VertexBufferLayout()
 
 }
 
-void VertexBufferLayout::pushElement(const VertexBufferElement vbe)
+void VertexBufferLayout::pushElement(const VertexBufferElement &vbe)
 {
     // Total size of this element
     GLuint bytes = vbe.count * sizeOfGLType(vbe.type);
 
     // Push to last offset location
-    elements.push_back(std::tuple<VertexBufferElement, GLuint>(vbe, stride));;
+    elements.push_back(std::tuple<VertexBufferElement, GLuint>(vbe, stride));
     stride += bytes;
 }
 
-void VertexBufferLayout::setup()
+void VertexBufferLayout::setup() const
 {
-    std::vector< std::tuple<VertexBufferElement, GLuint> >::iterator it;
+    std::vector< std::tuple<VertexBufferElement, GLuint> >::const_iterator it;
     for (it = elements.begin(); it != elements.end(); ++it) {
-        std::tuple<VertexBufferElement, GLuint> tup = (*it);
-        VertexBufferElement element = std::get<0>(tup);
+        const std::tuple<VertexBufferElement, GLuint> &tup = (*it);
+        const VertexBufferElement &element = std::get<0>(tup);
         GLuint offset = std::get<1>(tup);
 
         GLuint index = it - elements.begin();
