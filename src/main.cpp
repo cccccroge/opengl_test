@@ -2,12 +2,13 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
-#include "shader.h"
+#include "Shader.h"
 #include "error.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include <memory>
+#include "utils.h"
 
 int main(void)
 {
@@ -68,12 +69,13 @@ int main(void)
     ib->bind();
 
     // Create shaders;
-    GLuint shaderProgram = CreateShaderProgram(
-        "rsc/vertexShader.glsl",
-        "rsc/fragmentShader.glsl");
-    GLCALL(glUseProgram(shaderProgram));
+    auto shader = std::make_unique<Shader>();
+    shader->addShader(GL_VERTEX_SHADER, "rsc/vertexShader.glsl");
+    shader->addShader(GL_FRAGMENT_SHADER, "rsc/fragmentShader.glsl");
+    shader->compileProgram();
+    shader->bind();
 
-    GLint loc = glGetUniformLocation(shaderProgram, "u_color");
+    // Manipulate uniform
     GLfloat r = 0.5;
     GLfloat increment = 0.01;
 
@@ -81,17 +83,17 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         // Unbind and re-bind to do test
-/*         va->unbind();
+        va->unbind();
         ib->unbind();
-        GLCALL(glUseProgram(0));
+        shader->bind();
 
         va->bind();
         ib->bind();
-        GLCALL(glUseProgram(shaderProgram)); */
+        shader->bind();
 
         /* Render here */
         GLCALL(glClear(GL_COLOR_BUFFER_BIT));
-        GLCALL(glUniform4f(loc, r, 0.5, 0.5, 1));
+        shader->setUniformSingle<4, GLfloat>("u_color", {r, 0.5, 0.5, 1});
         GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         /* Changing uniform's value */
@@ -107,9 +109,6 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
     }
-
-    // clean up objects
-    GLCALL(glDeleteProgram(shaderProgram));
 
     glfwTerminate();
     return 0;

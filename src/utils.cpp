@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <fstream>
 
 GLuint sizeOfGLType(GLuint type)
 {
@@ -19,4 +20,13 @@ GLuint sizeOfGLType(GLuint type)
     default:
         return 4; 
     }
+}
+
+const std::string file2String(const std::string &path)
+{
+    std::ifstream in(path);
+    std::string contents((std::istreambuf_iterator<char>(in)), 
+        std::istreambuf_iterator<char>());
+
+    return contents;
 }
