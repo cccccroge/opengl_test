@@ -66,8 +66,10 @@ bool Shader::validateShader(const GLuint type)
 {
     // Check existence
     GLuint shader = getShaderStruct(type).getShaderID();
-    if (shader == 0)
+    if (shader == 0) {
+        getShaderStruct(type).setValid(false);
         return false;
+    }
 
     // Check compile status
     GLint success;
@@ -109,9 +111,9 @@ std::vector<GLuint> Shader::getValidShaderIDs()
 {
     std::vector<GLuint> ids;
     
-    if (validateShader(GL_VERTEX_SHADER))
+    if (vertexShader.getValid())
         ids.push_back(vertexShader.getShaderID());
-    if (validateShader(GL_FRAGMENT_SHADER))
+    if (fragmentShader.getValid())
         ids.push_back(fragmentShader.getShaderID());
     
     return ids;

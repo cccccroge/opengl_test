@@ -35,8 +35,9 @@ public:
     {
         GLint loc = glGetUniformLocation(program, name);
         auto first = list.begin();
+        GLCALL(glUniform4f(loc, *first, *(first+1), *(first+2), *(first+3)));
 
-        if (typeid(T) == typeid(GLfloat)) {
+/*         if (typeid(T) == typeid(GLfloat)) {
             if (size == 1)
                 GLCALL(glUniform1f(loc, *first));
             else if (size == 2)
@@ -44,8 +45,7 @@ public:
             else if (size == 3)
                 GLCALL(glUniform3f(loc, *first, *(first+1), *(first+2)));
             else if (size == 4)
-                GLCALL(glUniform4f(loc, *first, *(first+1), *(first+2), *(first+3)));
-        }
+        } */
     }
 /*     void setUniformArray();
     void setUniformMatrix(); */

@@ -9,6 +9,7 @@
 #include "VertexArray.h"
 #include <memory>
 #include "utils.h"
+#include "Renderer.h"
 
 int main(void)
 {
@@ -20,7 +21,7 @@ int main(void)
 
     /* Create a windowed mode window and its OpenGL context */
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -75,6 +76,9 @@ int main(void)
     shader->compileProgram();
     shader->bind();
 
+    // Create renderer
+    Renderer renderer;
+
     // Manipulate uniform
     GLfloat r = 0.5;
     GLfloat increment = 0.01;
@@ -85,16 +89,16 @@ int main(void)
         // Unbind and re-bind to do test
         va->unbind();
         ib->unbind();
-        shader->bind();
+        shader->unbind();
 
         va->bind();
         ib->bind();
         shader->bind();
 
         /* Render here */
-        GLCALL(glClear(GL_COLOR_BUFFER_BIT));
+        renderer.clear();
         shader->setUniformSingle<4, GLfloat>("u_color", {r, 0.5, 0.5, 1});
-        GLCALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        renderer.draw(*va, *ib, *shader);
 
         /* Changing uniform's value */
         if (r >= 1.0 || r <= 0.0)
